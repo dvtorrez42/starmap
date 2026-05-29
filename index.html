@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>Star Map — Interactive Night Sky &amp; Constellation Finder</title>
+  <meta name="description" content="Free interactive star map for any location and date. Search by city, explore all 88 constellations, star names, and the Milky Way. Export a custom sky chart as a PDF." />
+  <meta name="keywords" content="star map, night sky map, constellation map, sky chart, star chart, constellation finder, stars tonight, night sky viewer, astronomy map, interactive star map, what stars are visible tonight" />
+  <link rel="canonical" href="https://yourdomain.com/" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp previews) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://yourdomain.com/" />
+  <meta property="og:title"       content="Star Map — Interactive Night Sky &amp; Constellation Finder" />
+  <meta property="og:description" content="Free interactive star map. Pick any city and date to see exactly which stars and constellations are above your horizon tonight." />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:title"       content="Star Map — Interactive Night Sky &amp; Constellation Finder" />
+  <meta name="twitter:description" content="Free interactive star map. Pick any city and date to see exactly which stars and constellations are above your horizon tonight." />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "StarMap",
+    "url": "https://yourdomain.com/",
+    "description": "Interactive star map showing the night sky from any location on Earth for any date and time. Displays all 88 constellations with outlines and labels, star names, magnitudes, and the Milky Way.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Interactive night sky map for any location and date",
+      "All 88 IAU constellations with outlines and labels",
+      "Search by city or town name",
+      "Star names, magnitudes, and spectral colours",
+      "Milky Way visualisation",
+      "Altitude grid and cardinal directions",
+      "Export sky chart as a print-ready PDF"
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <header>
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+        <h1>StarMap</h1>
+      </header>
+
+      <form id="controls">
+        <fieldset>
+          <legend>Location</legend>
+
+          <!-- City search -->
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="citySearch" placeholder="Search city or town…" autocomplete="off" spellcheck="false" />
+            <div id="cityResults" class="search-dropdown" hidden></div>
+          </div>
+
+          <label>
+            Latitude
+            <input type="number" id="lat" min="-90" max="90" step="0.0001" value="40.7128" placeholder="e.g. 40.7128" required />
+          </label>
+          <label>
+            Longitude
+            <input type="number" id="lng" min="-180" max="180" step="0.0001" value="-74.0060" placeholder="e.g. -74.0060" required />
+          </label>
+          <button type="button" id="geoBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+              <circle cx="12" cy="12" r="9" opacity=".3"/>
+            </svg>
+            Use my location
+          </button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Date &amp; Time</legend>
+          <label>
+            Date
+            <input type="date" id="date" required />
+          </label>
+          <label>
+            Time
+            <input type="time" id="time" required />
+          </label>
+          <button type="button" id="nowBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            Use current time
+          </button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Display</legend>
+          <label class="toggle-row">
+            <input type="checkbox" id="showGrid" />
+            Altitude grid
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="showMilkyWay" checked />
+            Milky Way glow
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="showNames" checked />
+            Star names
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="showConLines" checked />
+            Constellation lines
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="showConLabels" checked />
+            Constellation labels
+          </label>
+        </fieldset>
+
+        <button type="submit" id="renderBtn">Render Sky</button>
+        <button type="button" id="exportBtn" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export PDF
+        </button>
+      </form>
+
+      <div id="info-box" hidden>
+        <p id="info-location"></p>
+        <p id="info-time"></p>
+        <p id="info-lst"></p>
+        <p id="info-stars"></p>
+      </div>
+    </aside>
+
+    <main id="view">
+      <div id="canvas-wrapper">
+        <canvas id="skyCanvas"></canvas>
+        <div id="tooltip" hidden></div>
+        <div id="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2L12 4M12 20L12 22M2 12L4 12M20 12L22 12"/>
+          </svg>
+          <p>Set your location and date,<br/>then click <strong>Render Sky</strong></p>
+        </div>
+      </div>
+      <div id="compass">
+        <span class="dir n">N</span>
+        <span class="dir e">E</span>
+        <span class="dir s">S</span>
+        <span class="dir w">W</span>
+      </div>
+      <div id="legend">
+        <span class="mag-demo m1"></span> Mag 1
+        <span class="mag-demo m2"></span> Mag 2–3
+        <span class="mag-demo m3"></span> Mag 4–5
+        <span class="color-demo blue"></span> Hot
+        <span class="color-demo white"></span> White
+        <span class="color-demo yellow"></span> Sun-like
+        <span class="color-demo orange"></span> Cool
+        <span class="color-demo red"></span> Red giant
+      </div>
+    </main>
+  </div>
+
+  <!-- About / SEO content section -->
+  <section id="about" aria-label="About StarMap">
+    <div class="about-inner">
+
+      <h2>Interactive Star Map &amp; Constellation Finder</h2>
+      <p class="about-lead">
+        StarMap is a free, interactive night sky map that shows exactly which stars and constellations
+        are visible from any location on Earth at any date and time. Search for your city, choose a
+        moment in time, and render an accurate sky chart in seconds.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">✦</div>
+          <h3>Real-Time Sky Chart</h3>
+          <p>See the night sky exactly as it appears from your location tonight — or travel to any date
+             in the past or future. Stars are plotted from a real astronomical catalogue, accurate to
+             a fraction of a degree.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⟡</div>
+          <h3>All 88 Constellations</h3>
+          <p>Every IAU constellation is outlined and labelled, from familiar ones like Orion, Ursa Major,
+             and Cassiopeia to southern constellations such as Crux, Centaurus, and Pavo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">◎</div>
+          <h3>Search by City</h3>
+          <p>Type any city or town name to instantly set your observing location. Coordinates are filled
+             in automatically so you can get to your sky chart without looking anything up.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⬡</div>
+          <h3>Export as PDF</h3>
+          <p>Download a print-ready A4 star chart with a custom title and caption — ideal for framing
+             as a personalised gift, commemorating a special date, or taking outside for stargazing.</p>
+        </div>
+      </div>
+
+      <div class="how-to">
+        <h2>How to Use the Star Map</h2>
+        <ol class="steps">
+          <li><strong>Find your location</strong> — type a city name in the search box or enter latitude and longitude manually. You can also click <em>Use my location</em> on a supported browser.</li>
+          <li><strong>Set the date and time</strong> — choose any date and time, or click <em>Use current time</em> to see the sky right now.</li>
+          <li><strong>Render the sky</strong> — click <em>Render Sky</em> to generate your star map. The circular chart is centred on your zenith, with north at the top and the horizon at the edge.</li>
+          <li><strong>Explore</strong> — hover over any star to see its name, magnitude, altitude, and azimuth. Toggle constellation lines, star names, altitude grid, and the Milky Way glow from the Display panel.</li>
+          <li><strong>Export (optional)</strong> — click <em>Export PDF</em> to download a printable A4 sky chart with your own title and subtitle.</li>
+        </ol>
+      </div>
+
+      <div class="faq">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <h3>What stars are visible tonight from my location?</h3>
+          <p>Type your city in the search box, set the date and time to tonight, and click <em>Render Sky</em>.
+             The map shows every naked-eye star above your horizon, sized and coloured by brightness and
+             spectral type. Stars brighter than magnitude 2 are labelled by name.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>How do I identify constellations in the night sky?</h3>
+          <p>Enable <em>Constellation lines</em> and <em>Constellation labels</em> in the Display panel.
+             The star map draws the official IAU pattern for each constellation and labels it with its
+             standard three-letter abbreviation — for example Ori for Orion, UMa for Ursa Major,
+             and Sco for Scorpius.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Can I see the sky for a past or future date?</h3>
+          <p>Yes. The date and time fields accept any value, so you can view the night sky on your
+             birthday, a historic event, or any future date. Positions are calculated mathematically
+             rather than fetched from a live service, so there is no limit on the date range.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>How accurate is this star map?</h3>
+          <p>Star positions come from the HYG star catalogue (a combination of the Hipparcos, Yale
+             Bright Star, and Gliese catalogues). Coordinates are converted from equatorial to
+             horizontal using standard formulae for local sidereal time, accurate to well within
+             a degree for naked-eye observing.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Can I print a star chart for a specific date as a gift?</h3>
+          <p>Yes. Render the sky for the date and location you want, then click <em>Export PDF</em>.
+             You can add a custom title — such as a name or occasion — and a subtitle with the date
+             and place. The download is a dark-themed A4 PDF ready to print or frame.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Which constellations are visible from the Northern Hemisphere tonight?</h3>
+          <p>That depends on your latitude, the date, and the time. Enter your location and today's
+             date to find out — the star map will show exactly which constellations are currently
+             above your horizon and where in the sky each one sits.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PDF Export modal -->
+  <div id="export-modal" class="modal-overlay" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <h2 id="modal-heading">Export as PDF</h2>
+      <p class="modal-hint">A4 portrait · dark sky theme</p>
+
+      <label class="modal-label">
+        Title
+        <input type="text" id="pdfTitle" placeholder="Night Sky over New York" maxlength="80" />
+      </label>
+
+      <label class="modal-label">
+        Subtitle <span class="optional">(optional)</span>
+        <textarea id="pdfSubtitle" placeholder="New York City · May 29, 2025 · 10:00 PM&#10;Any text you'd like to add…" rows="3" maxlength="200"></textarea>
+      </label>
+
+      <div id="export-preview-row">
+        <div class="preview-swatch">
+          <div class="preview-title-line"></div>
+          <div class="preview-sub-line"></div>
+          <div class="preview-circle"></div>
+          <div class="preview-footer-line"></div>
+        </div>
+        <p class="preview-desc">
+          Title in large bold text at the top,<br/>
+          subtitle below, star map centred,<br/>
+          location &amp; date printed at the bottom.
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="modalCancel">Cancel</button>
+        <button type="button" id="modalExport" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download PDF
+        </button>
+      </div>
+
+      <div id="export-spinner" hidden>
+        <div class="spinner"></div>
+        <span>Rendering…</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/stars.js"></script>
+  <script src="data/constellations.js"></script>
+  <script src="js/astronomy.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
