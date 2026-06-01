@@ -467,6 +467,92 @@ button svg { width: 14px; height: 14px; flex-shrink: 0; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Cafecito floating button ───────────────────────────── */
+.cafecito-float {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFDD00;
+  color: #1a1000;
+  border-radius: 50px;
+  padding: 10px 18px 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+  transition: transform .15s ease, box-shadow .15s ease;
+  white-space: nowrap;
+}
+.cafecito-float svg { flex-shrink: 0; stroke: #1a1000; }
+.cafecito-float:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+}
+
+/* ── About section support card ─────────────────────────── */
+.support-card {
+  background: linear-gradient(145deg, #111128 0%, #0d0d20 100%);
+  border: 1px solid rgba(107,127,212,0.25);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.support-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+.support-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+.support-card > p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  max-width: 480px;
+}
+.cafecito-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFDD00;
+  color: #1a1000;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(255,221,0,0.2);
+  transition: transform .15s ease, box-shadow .15s ease;
+  margin-top: 4px;
+}
+.cafecito-btn svg { stroke: #1a1000; }
+.cafecito-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,221,0,0.3);
+}
+.support-sub {
+  font-size: 12px !important;
+  color: var(--text-dim) !important;
+  margin-top: -4px;
+}
+.support-sub a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.support-sub a:hover { text-decoration: underline; }
+
 /* ── Responsive ─────────────────────────────────────────── */
 /* ── About / SEO content section ────────────────────────── */
 #about {
