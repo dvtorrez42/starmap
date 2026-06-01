@@ -448,6 +448,28 @@ button svg { width: 14px; height: 14px; flex-shrink: 0; }
 .btn-primary:hover { background: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
 .btn-primary svg { stroke: #fff; }
 
+.btn-coffee {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  background: #FFDD00;
+  border: 1px solid #e6c800;
+  border-radius: var(--radius);
+  color: #1a1000;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.btn-coffee svg { stroke: #1a1000; width: 14px; height: 14px; flex-shrink: 0; }
+.btn-coffee:hover { background: #f5d400; transform: translateY(-1px); }
+
 /* Spinner */
 #export-spinner {
   display: flex;
